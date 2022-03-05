@@ -76,10 +76,7 @@
 </template>
 
 <script>
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD'
-});
+import { formatCurrency, formatNumber, formatNumberShort } from "~/shared/formatting";
 
 export default {
   name: "QuoteAnalyzer",
@@ -166,26 +163,9 @@ export default {
     isSelected(rowIndex) {
       return this.selected.find(row => row.rowIndex === rowIndex);
     },
-    formatCurrency(value) {
-      return currencyFormatter.format(value);
-    },
-    formatNumber(value) {
-      return value.toLocaleString('en-US');
-    },
-    formatNumberShort(value) {
-      let shortValue = value;
-      let unit = '';
-      if (shortValue > 1000) {
-        shortValue /= 1000;
-        unit = 'k';
-      }
-      if (shortValue > 1000) {
-        shortValue /= 1000;
-        unit = 'M'
-      }
-
-      return this.formatNumber(shortValue) + unit;
-    }
+    formatCurrency,
+    formatNumber,
+    formatNumberShort
   },
   props: {
     rows: Array

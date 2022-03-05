@@ -30,10 +30,7 @@
 </template>
 
 <script>
-const currencyFormatter = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD'
-});
+import { formatCurrency } from "~/shared/formatting";
 
 export default {
   name: "PriceButton",
@@ -49,7 +46,7 @@ export default {
     },
     formattedPrice() {
       if (!this.showPrice) return '---'
-      return currencyFormatter.format(this.price)
+      return formatCurrency(this.price);
     }
   },
   props: {
