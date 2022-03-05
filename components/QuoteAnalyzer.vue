@@ -5,18 +5,20 @@
         <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
           <dt>Total Pounds</dt>
           <dd class="text-2xl">
-            {{ totalPounds() }}
+            {{ formatNumberShort(totalWeight) }}{{ totalWeight.unit }}
           </dd>
         </div>
         <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
           <dt>Invoice</dt>
           <dd class="text-2xl">
-            {{ invoiceTotal() }}
+            {{ formatCurrency(invoiceTotal) }}
           </dd>
         </div>
         <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
           <dt>Avg $/CWT</dt>
-          <dd class="text-2xl">0</dd>
+          <dd class="text-2xl">
+            {{ formatCurrency(averagePrice) }}
+          </dd>
         </div>
       </dl>
     </div>
@@ -33,7 +35,7 @@
     <table>
       <thead>
         <tr class="bg-gray-200">
-          <th v-for="column in staticColumns" class="px-3 py-1 text-left">
+          <th v-for="column in columns" class="px-3 py-1 text-left">
             {{ column.label }}
           </th>
         </tr>
@@ -46,7 +48,7 @@
         >
           <td
             class="px-3 py-1 text-left"
-            v-for="column in staticColumns.filter(c => c.property)"
+            v-for="column in columns.filter(c => c.property)"
           >
             {{
               column.property === 'Weight'
@@ -56,7 +58,7 @@
           </td>
           <td
             class="px-3 py-1 text-left"
-            v-for="(column, columnIndex) in staticColumns.filter(c => c.property === null)"
+            v-for="(column, columnIndex) in columns.filter(c => c.property === null)"
           >
             <PriceButton
               class="w-full text-left"
@@ -82,7 +84,24 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 export default {
   name: "QuoteAnalyzer",
   computed: {
-    staticColumns() {
+    averagePrice() {
+      // prevent division by zero
+      if (this.totalWeight === 0) return 0;
+      return this.invoiceTotal / this.totalWeight * 100;
+    },
+    invoiceTotal() {
+      return this.selected.reduce((totalPrice, { rowIndex, columnIndex }) => {
+        const weight = this.rows[rowIndex].Weight;
+        const price = this.rows[rowIndex].Quotes[columnIndex].FinalPrice;
+        return totalPrice + (weight / 100 * price);
+      }, 0);
+    },
+    totalWeight() {
+      return this.selected.reduce((total, { rowIndex }) => {
+        return total + this.rows[rowIndex].Weight;
+      }, 0);
+    },
+    columns() {
       return [
         { label: 'Location', property: 'Location' },
         { label: 'Part #', property: 'PartNo' },
@@ -94,25 +113,6 @@ export default {
         { label: 'RBI', property: null },
       ];
     },
-    /**
-     * Just for fun, this calculates the columns based on the data.
-     * The downside of this approach is that the frontend has no control
-     * over the order of the columns, can't customize table headers, etc.
-     */
-    dynamicColumns() {
-      return this.rows.reduce((cols, row) => {
-        Object.keys(row).forEach(key => {
-          if (key === 'Quotes') {
-            row.Quotes.forEach(quote => {
-              cols.add(quote.Company);
-            });
-            return;
-          }
-          cols.add(key);
-        });
-        return cols;
-      }, new Set())
-    }
   },
   data() {
     return {
@@ -146,15 +146,6 @@ export default {
         this.selected.push({ rowIndex, columnIndex });
       }
     },
-    invoiceTotal() {
-      const total = this.selected.reduce((totalPrice, { rowIndex, columnIndex }) => {
-        const weight = this.rows[rowIndex].Weight;
-        const price = this.rows[rowIndex].Quotes[columnIndex].FinalPrice;
-        return totalPrice + (weight / 100 * price);
-      }, 0);
-
-      return currencyFormatter.format(total);
-    },
     isChecked(rowIndex, columnIndex) {
       const rowInSelected = this.selected.find(row => row.rowIndex === rowIndex);
       return rowInSelected && rowInSelected.columnIndex === columnIndex;
@@ -175,31 +166,26 @@ export default {
     isSelected(rowIndex) {
       return this.selected.find(row => row.rowIndex === rowIndex);
     },
-    totalPounds() {
-      let total = this.selected.reduce((weight, { rowIndex }) => {
-        return weight + this.rows[rowIndex].Weight;
-      }, 0);
-
+    formatCurrency(value) {
+      return currencyFormatter.format(value);
+    },
+    formatNumberShort(value) {
+      let shortValue = value;
       let unit = '';
-      if (total > 1000) {
-        total = total / 1000;
+      if (shortValue > 1000) {
+        shortValue /= 1000;
         unit = 'k';
       }
-      if (total > 1000) {
-        total = total / 1000;
-        unit = 'M';
+      if (shortValue > 1000) {
+        shortValue /= 1000;
+        unit = 'M'
       }
 
-      return total.toLocaleString('en-US') + unit;
+      return shortValue.toLocaleString('en-US') + unit;
     }
   },
   props: {
     rows: Array
-  },
-  watch: {
-    getSelected() {
-      this.selected = this.getSelected
-    }
   }
 }
 </script>
