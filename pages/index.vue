@@ -1,5 +1,5 @@
 <template>
-  <QuoteAnalyzer :data="dataSample" />
+  <QuoteAnalyzer :rows="dataSample" />
 </template>
 
 <script>
