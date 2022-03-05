@@ -97,9 +97,11 @@ export default {
       return this.selected.reduce((total, { rowIndex }) => {
         return total + this.rows[rowIndex].Weight;
       }, 0);
-    },
-    columns() {
-      return [
+    }
+  },
+  data() {
+    return {
+      columns: [
         { label: 'Location', property: 'Location' },
         { label: 'Part #', property: 'PartNo' },
         { label: 'Steel Product', property: 'Product' },
@@ -108,16 +110,15 @@ export default {
         { label: 'Steel Core', property: null },
         { label: 'AC Steel', property: null },
         { label: 'RBI', property: null },
-      ];
-    },
-  },
-  data() {
-    return {
+      ],
+      priceKey: 'FinalPrice',
       selected: [],
-      priceKey: 'FinalPrice'
     }
   },
   methods: {
+    formatCurrency,
+    formatNumber,
+    formatNumberShort,
     getRow(row, column) {
       return row.Quotes.find(quote => quote.Company === column.label);
     },
@@ -163,9 +164,6 @@ export default {
     isSelected(rowIndex) {
       return this.selected.find(row => row.rowIndex === rowIndex);
     },
-    formatCurrency,
-    formatNumber,
-    formatNumberShort
   },
   props: {
     rows: Array
