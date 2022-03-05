@@ -52,7 +52,7 @@
           >
             {{
               column.property === 'Weight'
-                ? row[column.property].toLocaleString('en-US')
+                ? formatNumber(row[column.property])
                 : row[column.property]
             }}
           </td>
@@ -169,6 +169,9 @@ export default {
     formatCurrency(value) {
       return currencyFormatter.format(value);
     },
+    formatNumber(value) {
+      return value.toLocaleString('en-US');
+    },
     formatNumberShort(value) {
       let shortValue = value;
       let unit = '';
@@ -181,7 +184,7 @@ export default {
         unit = 'M'
       }
 
-      return shortValue.toLocaleString('en-US') + unit;
+      return this.formatNumber(shortValue) + unit;
     }
   },
   props: {
