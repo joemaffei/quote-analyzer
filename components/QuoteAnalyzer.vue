@@ -2,24 +2,18 @@
   <div class="mt-6">
     <div class="w-full flex justify-center">
       <dl class="flex space-x-8">
-        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
-          <dt>Total Pounds</dt>
-          <dd class="text-2xl">
-            {{ formatNumberShort(totalWeight) }}{{ totalWeight.unit }}
-          </dd>
-        </div>
-        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
-          <dt>Invoice</dt>
-          <dd class="text-2xl">
-            {{ formatCurrency(invoiceTotal) }}
-          </dd>
-        </div>
-        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
-          <dt>Avg $/CWT</dt>
-          <dd class="text-2xl">
-            {{ formatCurrency(averagePrice) }}
-          </dd>
-        </div>
+        <TopPanel
+          label="Total Pounds"
+          :value="formatNumberShort(totalWeight)"
+        />
+        <TopPanel
+          label="Invoice"
+          :value="formatCurrency(invoiceTotal)"
+        />
+        <TopPanel
+          label="Avg $/CWT"
+          :value="formatCurrency(averagePrice)"
+        />
       </dl>
     </div>
     <div class="my-2 flex justify-end">
