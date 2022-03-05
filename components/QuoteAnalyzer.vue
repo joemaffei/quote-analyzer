@@ -1,6 +1,24 @@
 ﻿<template>
   <div>
-    <div class="mb-2 flex flex-row justify-end">
+    <div class="w-full flex justify-center">
+      <dl class="flex space-x-8">
+        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
+          <dt>Total Pounds</dt>
+          <dd class="text-2xl">
+            {{ totalPounds() }}
+          </dd>
+        </div>
+        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
+          <dt>Invoice</dt>
+          <dd class="text-2xl">0</dd>
+        </div>
+        <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
+          <dt>Avg $/CWT</dt>
+          <dd class="text-2xl">0</dd>
+        </div>
+      </dl>
+    </div>
+    <div class="my-2 flex justify-end">
       <select
         class="px-3 py-1"
         v-model="priceKey"
@@ -140,6 +158,13 @@ export default {
     },
     isSelected(rowIndex) {
       return this.selected.find(row => row.rowIndex === rowIndex);
+    },
+    totalPounds() {
+      const total = this.selected.reduce((weight, { rowIndex }) => {
+        return weight + this.rows[rowIndex].Weight;
+      }, 0);
+
+      return total.toLocaleString('en-US');
     }
   },
   props: {
