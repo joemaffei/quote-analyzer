@@ -1,6 +1,15 @@
 ﻿<template>
   <div>
-    <h1>{{ selected.size }}</h1>
+    <div class="mb-2 flex flex-row justify-end">
+      <select
+        class="px-3 py-1"
+        v-model="priceKey"
+      >
+        <option value="FinalPrice">Final Price</option>
+        <option value="PackagingFee">Packaging Fee</option>
+        <option value="FreightFee">Freight Fee</option>
+      </select>
+    </div>
     <table>
       <thead>
         <tr class="bg-gray-200">
@@ -48,9 +57,6 @@
 export default {
   name: "QuoteAnalyzer",
   computed: {
-    priceKey() {
-      return 'FinalPrice';
-    },
     staticColumns() {
       return [
         { label: 'Location', property: 'Location' },
@@ -85,7 +91,8 @@ export default {
   },
   data() {
     return {
-      selected: []
+      selected: [],
+      priceKey: 'FinalPrice'
     }
   },
   methods: {
