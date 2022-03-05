@@ -17,14 +17,9 @@
       </dl>
     </div>
     <div class="my-2 flex justify-end">
-      <select
-        class="px-3 py-1"
+      <PriceKeySelector
         v-model="priceKey"
-      >
-        <option value="FinalPrice">Final Price</option>
-        <option value="PackagingFee">Packaging Fee</option>
-        <option value="FreightFee">Freight Fee</option>
-      </select>
+      />
     </div>
     <QuoteTable
       :priceKey="priceKey"
@@ -79,7 +74,7 @@ export default {
       } else {
         this.selected.push({ rowIndex, columnIndex });
       }
-    },
+    }
   },
   props: {
     rows: Array
