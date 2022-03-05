@@ -23,5 +23,5 @@ export function formatNumberShort(value) {
     unit = 'M'
   }
 
-  return this.formatNumber(shortValue) + unit;
+  return formatNumber(shortValue) + unit;
 }
