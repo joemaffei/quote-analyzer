@@ -10,7 +10,9 @@
         </div>
         <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
           <dt>Invoice</dt>
-          <dd class="text-2xl">0</dd>
+          <dd class="text-2xl">
+            {{ invoiceTotal() }}
+          </dd>
         </div>
         <div class="bg-gray-300 flex flex-col items-center px-4 py-2">
           <dt>Avg $/CWT</dt>
@@ -72,6 +74,11 @@
 </template>
 
 <script>
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD'
+});
+
 export default {
   name: "QuoteAnalyzer",
   computed: {
@@ -139,6 +146,15 @@ export default {
         this.selected.push({ rowIndex, columnIndex });
       }
     },
+    invoiceTotal() {
+      const total = this.selected.reduce((totalPrice, { rowIndex, columnIndex }) => {
+        const weight = this.rows[rowIndex].Weight;
+        const price = this.rows[rowIndex].Quotes[columnIndex].FinalPrice;
+        return totalPrice + (weight / 100 * price);
+      }, 0);
+
+      return currencyFormatter.format(total);
+    },
     isChecked(rowIndex, columnIndex) {
       const rowInSelected = this.selected.find(row => row.rowIndex === rowIndex);
       return rowInSelected && rowInSelected.columnIndex === columnIndex;
@@ -160,11 +176,21 @@ export default {
       return this.selected.find(row => row.rowIndex === rowIndex);
     },
     totalPounds() {
-      const total = this.selected.reduce((weight, { rowIndex }) => {
+      let total = this.selected.reduce((weight, { rowIndex }) => {
         return weight + this.rows[rowIndex].Weight;
       }, 0);
 
-      return total.toLocaleString('en-US');
+      let unit = '';
+      if (total > 1000) {
+        total = total / 1000;
+        unit = 'k';
+      }
+      if (total > 1000) {
+        total = total / 1000;
+        unit = 'M';
+      }
+
+      return total.toLocaleString('en-US') + unit;
     }
   },
   props: {
